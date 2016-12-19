@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
-# 在本 shell 内执行下边这2个脚本
+# 在本 shell 内执行下边这个脚本，添加几个函数
 . /lib/lsb/init-functions
+# 这个脚本找不到，网上有人说不用关心这个，好吧。
 . /etc/default/hadoop
 
+# 判断 /et/default/impala是否存在且是一个常规文件
 if [ -f /etc/default/impala ] ; then
   . /etc/default/impala
 fi
 
 # Autodetect JAVA_HOME if not defined
+# 文件 /usr/libexec/bigtop-detect-javahome 是否存在
 if [ -e /usr/libexec/bigtop-detect-javahome ]; then
   . /usr/libexec/bigtop-detect-javahome
 elif [ -e /usr/lib/bigtop-utils/bigtop-detect-javahome ]; then
