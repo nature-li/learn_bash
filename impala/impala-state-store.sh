@@ -12,6 +12,7 @@ fi
 
 # Autodetect JAVA_HOME if not defined
 # 文件 /usr/libexec/bigtop-detect-javahome 是否存在
+# 执行此脚本用于判定 JAVA_HOME
 if [ -e /usr/libexec/bigtop-detect-javahome ]; then
   . /usr/libexec/bigtop-detect-javahome
 elif [ -e /usr/lib/bigtop-utils/bigtop-detect-javahome ]; then
@@ -45,9 +46,16 @@ PIDFILE="/var/run/impala/statestored-impala.pid"
 LOCKDIR="/var/lock/subsys"
 LOCKFILE="$LOCKDIR/statestored"
 
+# install: copy files and set attributes
+# -d: 将所有参数当成目录处理，如果指定的目录不存在的话，创建它
+# -m 0755: 设置权限, 0rwxr-xr-x
+# -o impala: set ownership to impala
+# -g impala: set group to impala
+# 猜测以下命令应该是创建目录并 chown 一下的意思
 install -d -m 0755 -o impala -g impala /var/run/impala 1>/dev/null 2>&1 || :
 [ -d "$LOCKDIR" ] || install -d -m 0755 $LOCKDIR 1>/dev/null 2>&1 || :
 
+# 设置 impala 的一些配置信息，包括监听端口配置存放目录等其它信息
 if [ -f /etc/default/impala ] ; then
   . /etc/default/impala
 fi
@@ -77,6 +85,7 @@ start() {
 
   log_success_msg "Starting ${DESC}: "
 
+  # 切换账号，并用bash执行启动命令，记录bash的pid，并在shell内运行程序
   /bin/su -s /bin/bash -c "/bin/bash -c 'cd ${RUNDIR} && echo \$\$ > ${PIDFILE} && exec ${EXEC_PATH} ${DAEMON_FLAGS} >>${IMPALA_LOG_DIR}/impala-state-store.log 2>&1' &" $SVC_USER
   RETVAL=$?
   [ $RETVAL -eq 0 ] && touch $LOCKFILE

@@ -17,10 +17,12 @@
 
 # Override JAVA_HOME in the file below if you want to disable
 # automatic JAVA_HOME detection
-# test file exist and read permission is granted
+# 这个文件可用于设置 JAVA_HOME，如果不想用脚本探测的话
+# test file exist and read permission is granted by lyg
 [ -r /etc/default/bigtop-utils ] && . /etc/default/bigtop-utils
 
 # attempt to find java
+# 判断下列文件或目录是否存在，若存在则导出去成为 JAVA_HOME
 if [ -z "$JAVA_HOME" ]; then
   for candidate in \
     /usr/lib/jvm/java-6-sun \
